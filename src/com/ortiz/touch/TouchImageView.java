@@ -41,6 +41,7 @@ import android.widget.Scroller;
 public class TouchImageView extends ImageView {
 	
 	private static final String DEBUG = "DEBUG";
+    public Boolean isImageTopAligned = true;
 	
 	//
 	// SuperMin and SuperMax multipliers. Determine how much the image can be
@@ -391,8 +392,10 @@ public class TouchImageView extends ImageView {
     	resetZoom();
     	scaleImage(scale, viewWidth / 2, viewHeight / 2, true);
     	matrix.getValues(m);
-    	m[Matrix.MTRANS_X] = -((focusX * getImageWidth()) - (viewWidth * 0.5f));
-    	m[Matrix.MTRANS_Y] = -((focusY * getImageHeight()) - (viewHeight * 0.5f));
+
+        m[Matrix.MTRANS_X] = -((focusX * getImageWidth()) - (viewWidth * 0.5f));
+        m[Matrix.MTRANS_Y] = -((focusY * getImageHeight()) - (viewHeight * 0.5f));
+
     	matrix.setValues(m);
     	fixTrans();
     	setImageMatrix(matrix);
@@ -401,7 +404,6 @@ public class TouchImageView extends ImageView {
     /**
      * Set zoom parameters equal to another TouchImageView. Including scale, position,
      * and ScaleType.
-     * @param TouchImageView
      */
     public void setZoom(TouchImageView img) {
     	PointF center = img.getScrollPosition();
@@ -482,7 +484,6 @@ public class TouchImageView extends ImageView {
         if (contentSize <= viewSize) {
             minTrans = 0;
             maxTrans = viewSize - contentSize;
-            
         } else {
             minTrans = viewSize - contentSize;
             maxTrans = 0;
@@ -592,7 +593,12 @@ public class TouchImageView extends ImageView {
         // Center the image
         //
         float redundantXSpace = viewWidth - (scaleX * drawableWidth);
-        float redundantYSpace = viewHeight - (scaleY * drawableHeight);
+        float redundantYSpace;
+        if(isImageTopAligned) {
+            redundantYSpace = 0;
+        } else {
+            redundantYSpace = viewHeight - (scaleY * drawableHeight);
+        }
         matchViewWidth = viewWidth - redundantXSpace;
         matchViewHeight = viewHeight - redundantYSpace;
         if (!isZoomed() && !imageRenderedAtLeastOnce) {
